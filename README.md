@@ -1,0 +1,138 @@
+# 🔨 slacksmith
+
+> **Forge Slack messages that sound like *you* — not a release bot.**
+
+Your teammate is waiting. Your commit history is a mess. Your draft reads like a LinkedIn post written by a toaster.
+
+**Slacksmith** is a Claude Code / Codex skill that writes Slack updates in your real voice — short and personal by default, or a full update package (summary + Mermaid diagram + doc refresh + optional git push) when you actually ship something worth announcing.
+
+```
+"use slacksmith to message my boss about the auth fix"
+         ↓
+Quick update on the auth fix:
+
+1. Login now survives the token refresh race I mentioned Monday.
+2. Nothing user-visible changed — same screens, same clicks.
+3. Rolling out behind a flag tonight, watching error rates in the morning.
+
+Let me know if anything looks off on your end.
+```
+
+No robot voice. No bullet vomit. No "I am an AI assistant and I have completed the following tasks."
+
+---
+
+## ✨ What it actually does
+
+| You say | Slacksmith gives you |
+|---|---|
+| `draft a slack message about X` | A clean 2–5 line draft in your tone |
+| `give me 3 versions` | Safe • warmer • more direct |
+| `boss-facing vs tech-facing` | Two audience-tuned versions |
+| `slacksmith package mode` | Slack summary **+** Mermaid diagram **+** doc updates **+** worklog refresh **+** optional git push |
+| `use my recent Slack tone` | Reads your recent Slack via the Slack plugin and matches it |
+| `@Alex` | Resolves the real Slack mention if the plugin's connected |
+
+### 🎭 Two modes, one skill
+
+- **Draft Mode** (default): quick personal message, multiple versions, audience-aware (non-technical boss vs. technical teammate)
+- **Package Mode** (on request): the full "we shipped something" bundle — Slack summary + diagram + doc updates + worklog refresh + optional git push. For when a one-liner doesn't cut it.
+
+---
+
+## 📦 Install
+
+### Option A — one-liner (recommended)
+
+```bash
+git clone https://github.com/lauren-paang/slacksmith.git && bash slacksmith/install.sh
+```
+
+The installer detects whether you're using Claude Code, Codex, or both, and drops the skill into the right folder(s).
+
+### Option B — manual
+
+```bash
+git clone https://github.com/lauren-paang/slacksmith.git
+cp -R slacksmith ~/.claude/skills/slacksmith    # Claude Code
+cp -R slacksmith ~/.codex/skills/slacksmith     # Codex (optional)
+```
+
+### Option C — zero-git
+
+Download the repo as a zip from GitHub, extract, and drop the folder into `~/.claude/skills/`.
+
+### After install
+
+**Restart Claude Code** (or run `/clear`). You'll see `slacksmith` in the available-skills list.
+
+---
+
+## 🗣️ How to call it
+
+Plain English works. All of these are valid:
+
+```
+use slacksmith to draft a short update for my tech colleague
+slacksmith — give me 3 versions
+slacksmith, use my recent Slack tone, keep it warm
+slacksmith, scope only the database workflow part
+slacksmith package mode — summary plus flowchart, update the docs, push the repo
+```
+
+Or just `/slacksmith` and tell it what you want.
+
+---
+
+## 🧭 Good fit if...
+
+- You write a lot of Slack updates and they all start feeling like changelogs
+- You want **one** skill that handles "quick ping to boss" *and* "proper release announcement"
+- You want boss-version and tech-version of the same message on demand
+- You like your tools with personality
+
+## 🚫 Not the right tool if...
+
+- You want a formal changelog generator → try a release-notes bot
+- You want AI to autonomously post to Slack without review → this always returns drafts
+- You want it to invent information → it reads your session / codebase / Slack context and is deliberately conservative about "what we can prove"
+
+---
+
+## 🛠️ Under the hood
+
+```
+slacksmith/
+├── SKILL.md                       ← the brain (tone rules + two-mode workflow)
+├── agents/openai.yaml             ← Codex display metadata
+└── references/
+    └── document-scope.md          ← "which docs should I touch?" guide (package mode only)
+```
+
+- **Harness-agnostic**: works in Claude Code, Codex CLI, and any tool that reads the standard `SKILL.md` frontmatter.
+- **No network calls of its own** — it uses whatever Slack / git / filesystem tools your harness already has.
+- **Tone-first**: the skill is deliberately opinionated about *not* sounding like AI. See the "Tone Rules" section in `SKILL.md`.
+
+---
+
+## 💡 Philosophy
+
+> Good Slack messages are **short, specific, and sound like a human typed them.**
+
+Most AI writing tools optimize for impressive. Slacksmith optimizes for *believable*. A 3-line message your boss actually reads beats a 12-bullet summary they skim.
+
+Content comes from the session. Tone comes from your Slack history. Nothing is invented.
+
+---
+
+## 🤝 Contributing
+
+PRs welcome — especially new message shapes, audience buckets, or tone rules that have worked for you in real teams. Open an issue first if you're planning something big.
+
+## 📜 License
+
+MIT. Forge freely.
+
+---
+
+<sub>Built with Claude Code • Drop a ⭐ if slacksmith saved you from one more robotic Slack message.</sub>

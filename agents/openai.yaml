@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slacksmith"
+  short_description: "Forge a Slack message — quick draft or full update package"
+  default_prompt: "Use $slacksmith to write a Slack message. Default to a short personal draft; switch to package mode (summary + diagram + doc updates) if I ask for the wider bundle."
