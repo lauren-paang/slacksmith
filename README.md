@@ -45,13 +45,49 @@ Same update, two very different drafts.
 
 ## 📦 Install
 
-### 🧠 Easiest — let your agent install it (copy-paste prompt)
+### 🧠 Lazy-mode install — let your agent do it
 
-If you're already inside **Claude Code** or **Codex**, just paste this message and the agent does everything:
+Already chatting with **Claude Code** or **Codex**? Don't switch windows. Paste one of these and your agent handles the rest 👇
 
-> Install the **slacksmith** skill from `https://github.com/lauren-paang/slacksmith` for me. Clone the repo to a temp folder, run its `install.sh`, then delete the temp clone. After it's installed, tell me to restart this session so the new skill appears. Don't modify any of my other skills.
+**🪄 Short & sweet**
 
-That's it — the agent will clone, run the installer (which handles Claude Code + Codex detection), confirm success, and tell you when to `/clear`.
+> yo, grab `lauren-paang/slacksmith` from github and install it for me. run the `install.sh`, clean up after yourself, and tell me when to `/clear`.
+
+**☕ Polite version**
+
+> hey, could you install the slacksmith skill for me? repo is `github.com/lauren-paang/slacksmith` — clone it somewhere temporary, run `install.sh`, then delete the temp folder. ping me when it's ready to use.
+
+**🏗️ Builder vibe**
+
+> forge time. clone `lauren-paang/slacksmith`, run the installer, nuke the temp clone, and tell me the magic words to activate it.
+
+**😎 Absolute minimum**
+
+> install `lauren-paang/slacksmith` from github plz
+
+Your agent will clone, run the installer (auto-detects Claude Code + Codex), confirm success, and tell you when to restart. That's it.
+
+---
+
+### 🗺️ What the agent actually does when you paste that
+
+```mermaid
+flowchart TD
+    A[🧑 You paste the install prompt] --> B{🤖 Agent reads it}
+    B --> C[📥 git clone lauren-paang/slacksmith<br/>to /tmp]
+    C --> D[🔨 bash install.sh]
+    D --> E{🔍 Detects your setup}
+    E -->|~/.claude exists| F[📂 Copies to<br/>~/.claude/skills/slacksmith]
+    E -->|~/.codex exists| G[📂 Copies to<br/>~/.codex/skills/slacksmith]
+    E -->|both exist| H[📂 Installs to BOTH]
+    F --> I[🗑️ rm -rf /tmp clone]
+    G --> I
+    H --> I
+    I --> J[✅ 'Restart your session!']
+    J --> K[🎉 /slacksmith is live]
+```
+
+Takes ~10 seconds. No manual cp, no path guessing, no broken symlinks.
 
 ---
 
@@ -207,6 +243,139 @@ Notice what's **not** there: no table names, no endpoint names, no "deployed to 
 Copy your favorite, edit a word or two, paste into Slack. Done.
 
 > 💡 If you have the Slack MCP plugin installed, you can also ask: *"slacksmith, post Version 2 to #engineering as a draft"* and it'll save a draft directly in Slack for you to hit send on.
+
+### 🗺️ The same pipeline, as a flowchart
+
+```mermaid
+flowchart TD
+    A[🧑 'draft something for slack'] --> B[🤖 Asks WHAT<br/>topic • scope • audience]
+    B --> C{You answer}
+    C -->|direct answer| D[Lock in<br/>topic/scope/audience]
+    C -->|'look at the session'| E[📖 Read session history]
+    C -->|'check the git log'| F[📜 Read git log window]
+    C -->|'match my slack tone'| G[💬 Read recent Slack]
+    E --> D
+    F --> D
+    G --> D
+    D --> H{Audience?}
+    H -->|👔 boss / non-tech| I[🧹 Strip deploy lines<br/>🧹 Strip IDs & internals<br/>🧹 Translate to user-speak]
+    H -->|🛠️ technical teammate| J[🔧 Keep flags / guards<br/>🔧 Keep risks & gotchas<br/>🔧 Keep behavior diff]
+    I --> K[✍️ Draft 3 versions<br/>safest • warmer • direct]
+    J --> K
+    K --> L[📋 You copy/tweak/paste]
+    L --> M[🎉 Slack sent<br/>sounds like YOU]
+```
+
+---
+
+## 🛠️ Example 2 — The tech-teammate flow
+
+Same day, same fix — but now you're messaging your backend teammate who actually needs the internals.
+
+### Step 1 — The ask
+
+```
+you: /slacksmith same login fix but for @dave on the backend team,
+     he wants to know what actually changed
+```
+
+### Step 2 — Slacksmith reads context, skips questions
+
+Because you named a person and gave a clear topic, it doesn't ask for topic/scope/audience. Audience is obviously technical. Minimal-prompt mode kicks in:
+
+```
+slacksmith:
+Reading session + recent commits touching auth/session code.
+Any risks or known sharp edges I should flag for Dave?
+```
+
+### Step 3 — You answer the one thing it asked
+
+```
+you: yeah the refresh token grace window is now 30s,
+     flag it as worth monitoring
+```
+
+### Step 4 — You get a tech-tuned draft
+
+```
+slacksmith:
+
+━━━ Version 1 ━━━
+Login fix merged — `authService.refreshToken` was racing the
+session expiry. Moved the refresh to happen 30s before expiry
+instead of on 401, so we stop double-refreshing under load.
+
+Feature-flagged behind `SESSION_REFRESH_V2`, rolling at 10%
+tonight → 100% tomorrow if error rates stay flat.
+
+@dave — worth keeping an eye on the 30s grace window. If it's
+too tight under high-latency networks we can bump to 60s
+without redeploying (it's env-configurable).
+
+━━━ Version 2 (shorter) ━━━
+Auth race fix is in — refresh now fires 30s pre-expiry instead
+of reactively on 401. Behind `SESSION_REFRESH_V2`, 10% tonight.
+@dave heads up: the 30s window is env-tunable if it turns out
+tight.
+
+Suggested scope: today's commit set, technical audience, included @dave mention.
+```
+
+Notice what **is** there this time: the commit-level detail, the feature flag name, the config knob, the rollout percentages. All the stuff that got stripped for the boss version — because Dave actually needs it.
+
+### 🗺️ Boss version vs. tech version — side by side
+
+```mermaid
+flowchart LR
+    subgraph I[🎯 Same underlying facts]
+        F1[Login race condition fixed]
+        F2[refreshToken moved to 30s pre-expiry]
+        F3[Behind SESSION_REFRESH_V2 flag]
+        F4[Rolling 10% tonight]
+    end
+
+    I --> B[👔 Boss draft]
+    I --> T[🛠️ Tech draft]
+
+    subgraph BV[Boss keeps]
+        B1[✅ 'Users won't get<br/>logged out anymore']
+        B2[✅ 'Rolling out tonight']
+        B3[❌ no flag names]
+        B4[❌ no function names]
+        B5[❌ no percentages]
+    end
+
+    subgraph TV[Tech keeps]
+        T1[✅ authService.refreshToken]
+        T2[✅ SESSION_REFRESH_V2 flag]
+        T3[✅ 10% → 100% rollout]
+        T4[✅ 30s grace window]
+        T5[✅ env-configurable knob]
+    end
+
+    B --> BV
+    T --> TV
+```
+
+Same content, two completely different messages. That's the whole point.
+
+---
+
+## 🛠️ Example 3 — The one-line ping
+
+Sometimes you just need to send a quick check-in, not a full update.
+
+```
+you: /slacksmith quick ping to @alex asking if he needs the staging
+     db refreshed before his demo tomorrow
+
+slacksmith:
+@alex — do you want me to refresh staging before your demo tomorrow?
+Happy to kick it off tonight if it helps.
+```
+
+That's it. One message, no versions, no scope questions. Minimal-prompt mode + clear topic = instant draft.
 
 ---
 
