@@ -122,6 +122,94 @@ Or just `/slacksmith` and tell it what you want.
 
 ---
 
+## 🎬 What a real session looks like
+
+Here's the full pipeline in action — from a cold "draft something for Slack" to a sent-ready message:
+
+### Step 1 — You start with a vague ask
+
+```
+you: /slacksmith i need to tell my boss about what we fixed today
+```
+
+### Step 2 — Slacksmith asks WHAT
+
+Before drafting a single word, it locks down the three things that matter: **topic, scope, audience**.
+
+```
+slacksmith:
+Before I draft — a couple of quick things:
+
+1. What's the one thing this message should focus on?
+   (the login fix? the whole day's work? something else?)
+
+2. Who's the audience — non-technical boss, or technical teammate?
+
+3. How broad — just today, or this week?
+```
+
+### Step 3 — You answer, or tell it to look
+
+You can answer directly — or ask it to figure things out from context:
+
+```
+you: look at this session and today's git log, audience is my non-technical boss,
+     just today
+```
+
+Slacksmith then pulls from what's available:
+
+- **Current session** — what you two were just working on
+- **Codebase / git log** — only if you asked for it, only for the window you said
+- **Recent Slack history** — via the Slack plugin, *for tone matching only*, never to fabricate content
+
+It won't silently rummage through your git history. If it wants more context, it asks.
+
+### Step 4 — You tell it to draft
+
+```
+you: ok draft it, 3 versions
+```
+
+### Step 5 — You get clean, human-sounding drafts
+
+```
+slacksmith:
+
+━━━ Version 1 (safest) ━━━
+Quick update on the login issue:
+
+1. Users getting kicked out mid-session should be fixed now.
+2. Nothing changed on their screen — they'll just stop seeing the problem.
+3. Turning it on for everyone tonight, watching tomorrow morning to confirm.
+
+Let me know if anyone still reports it.
+
+━━━ Version 2 (warmer) ━━━
+Hey — quick one on the login thing you flagged yesterday.
+
+1. Fixed. People won't randomly get logged out anymore.
+2. No visible change for users, same screens and same clicks.
+3. Going live tonight — I'll check in tomorrow and let you know.
+
+━━━ Version 3 (more direct) ━━━
+Login fix is ready. Rolling out tonight.
+Users won't notice anything different — they just stop getting
+kicked out. I'll confirm it's holding in the morning.
+
+Suggested scope: today only, non-technical audience, session + git log context.
+```
+
+Notice what's **not** there: no table names, no endpoint names, no "deployed to dev via CodePipeline," no commit hashes. That's the boss-audience self-check at work.
+
+### Step 6 — You pick, tweak, paste
+
+Copy your favorite, edit a word or two, paste into Slack. Done.
+
+> 💡 If you have the Slack MCP plugin installed, you can also ask: *"slacksmith, post Version 2 to #engineering as a draft"* and it'll save a draft directly in Slack for you to hit send on.
+
+---
+
 ## 🧭 Good fit if...
 
 - You write a lot of Slack updates and they all start feeling like changelogs
