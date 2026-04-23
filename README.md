@@ -125,6 +125,20 @@ Content comes from the session. Tone comes from your Slack history. Nothing is i
 
 ---
 
+## ♻️ Updating
+
+Already installed via `git clone`? Pull the latest:
+
+```bash
+cd ~/.claude/skills/slacksmith && git pull
+# and if you installed for Codex too:
+cd ~/.codex/skills/slacksmith && git pull
+```
+
+Then restart Claude Code (or `/clear`) so it picks up the new version.
+
+---
+
 ## 🤝 Contributing
 
 PRs welcome — especially new message shapes, audience buckets, or tone rules that have worked for you in real teams. Open an issue first if you're planning something big.
