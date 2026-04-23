@@ -140,9 +140,13 @@ If the user gives a very short request (`draft slack update`, `write this for sl
 - translate product usage into simple language (`they uploaded audio`, `they generated reports`)
 - prefer plain words like `we can confirm` / `we can't tell yet`
 - skip IDs, table names, endpoint names, storage-layer details
+- **skip deploy / infra / pipeline status lines** — e.g. `backend allowlist updated, deployed to dev`, `CodePipeline ran`, `ECS task restarted`, `pushed to main`, `schema migration applied`, `backend + frontend both deployed`. These feel like progress but are implementation detail to a boss. If the boss genuinely needs to know something shipped, say it in user-facing terms (`the new fields are live for users now`), not in deploy terms.
+- skip commit counts, branch names, PR numbers, file names, lint/CI results
 - center on: what the feature does, how it should feel, what to test, edge cases to notice
 - write feature behavior as clear statements, not open questions
 - when a current boundary matters, fold it into the relevant point — don't make a separate `limitation` section
+
+**Self-check before returning a boss draft:** re-read each numbered point and ask "would this sentence make sense to someone who doesn't know our stack?" If a point names a backend, a deploy tool, a pipeline, a commit, or a file, rewrite it in user-facing terms or delete it.
 
 **For technical teammates:**
 

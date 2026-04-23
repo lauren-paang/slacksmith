@@ -45,29 +45,64 @@ Same update, two very different drafts.
 
 ## 📦 Install
 
-### Option A — one-liner (recommended)
+### 🧠 Easiest — let your agent install it (copy-paste prompt)
+
+If you're already inside **Claude Code** or **Codex**, just paste this message and the agent does everything:
+
+> Install the **slacksmith** skill from `https://github.com/lauren-paang/slacksmith` for me. Clone the repo to a temp folder, run its `install.sh`, then delete the temp clone. After it's installed, tell me to restart this session so the new skill appears. Don't modify any of my other skills.
+
+That's it — the agent will clone, run the installer (which handles Claude Code + Codex detection), confirm success, and tell you when to `/clear`.
+
+---
+
+### 🖥️ Claude Code
+
+**Option A — one-liner:**
 
 ```bash
-git clone https://github.com/lauren-paang/slacksmith.git && bash slacksmith/install.sh
+git clone https://github.com/lauren-paang/slacksmith.git /tmp/slacksmith && bash /tmp/slacksmith/install.sh && rm -rf /tmp/slacksmith
 ```
 
-The installer detects whether you're using Claude Code, Codex, or both, and drops the skill into the right folder(s).
-
-### Option B — manual
+**Option B — manual symlink (so `git pull` in one place updates the skill):**
 
 ```bash
-git clone https://github.com/lauren-paang/slacksmith.git
-cp -R slacksmith ~/.claude/skills/slacksmith    # Claude Code
-cp -R slacksmith ~/.codex/skills/slacksmith     # Codex (optional)
+git clone https://github.com/lauren-paang/slacksmith.git ~/code/slacksmith
+ln -s ~/code/slacksmith ~/.claude/skills/slacksmith
 ```
 
-### Option C — zero-git
+**After install:** quit and relaunch Claude Code, or run `/clear`. You'll see `slacksmith` in the skills list. Invoke with `/slacksmith` or "use slacksmith to draft a slack message about …".
 
-Download the repo as a zip from GitHub, extract, and drop the folder into `~/.claude/skills/`.
+---
 
-### After install
+### 🤖 Codex (OpenAI CLI)
 
-**Restart Claude Code** (or run `/clear`). You'll see `slacksmith` in the available-skills list.
+**Option A — one-liner:**
+
+```bash
+git clone https://github.com/lauren-paang/slacksmith.git /tmp/slacksmith && bash /tmp/slacksmith/install.sh && rm -rf /tmp/slacksmith
+```
+
+The installer auto-detects `~/.codex/` and drops the skill into `~/.codex/skills/slacksmith`.
+
+**Option B — manual symlink:**
+
+```bash
+git clone https://github.com/lauren-paang/slacksmith.git ~/code/slacksmith
+ln -s ~/code/slacksmith ~/.codex/skills/slacksmith
+```
+
+**After install:** restart your Codex session. Codex will surface slacksmith via its skill discovery (the `agents/openai.yaml` file provides the display metadata).
+
+---
+
+### 📥 Zero-git option (any platform)
+
+1. Go to **https://github.com/lauren-paang/slacksmith**
+2. Click the green **Code** button → **Download ZIP**
+3. Unzip and move the folder to:
+   - `~/.claude/skills/slacksmith` (for Claude Code)
+   - `~/.codex/skills/slacksmith` (for Codex)
+4. Restart your session.
 
 ---
 
