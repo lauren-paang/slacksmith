@@ -4,7 +4,7 @@
 
 Your teammate is waiting. Your commit history is a mess. Your draft reads like a LinkedIn post written by a toaster.
 
-**Slacksmith** is a Claude Code / Codex skill that writes Slack updates in your real voice — short and personal by default, or a full update package (summary + Mermaid diagram + doc refresh + optional git push) when you actually ship something worth announcing.
+**Slacksmith** is a Claude Code / Codex skill that writes Slack updates in your real voice — short, personal, and believable. For project updates, check-ins, follow-ups, or status notes.
 
 ```
 "use slacksmith to message my boss about the auth fix"
@@ -28,15 +28,18 @@ No robot voice. No bullet vomit. No "I am an AI assistant and I have completed t
 |---|---|
 | `draft a slack message about X` | A clean 2–5 line draft in your tone |
 | `give me 3 versions` | Safe • warmer • more direct |
-| `boss-facing vs tech-facing` | Two audience-tuned versions |
-| `slacksmith package mode` | Slack summary **+** Mermaid diagram **+** doc updates **+** worklog refresh **+** optional git push |
+| `boss-facing vs tech-facing` | Two audience-tuned versions of the same update |
 | `use my recent Slack tone` | Reads your recent Slack via the Slack plugin and matches it |
-| `@Alex` | Resolves the real Slack mention if the plugin's connected |
+| `@Alex` | Resolves the real Slack mention if a Slack plugin is connected; falls back to plain `@Name` otherwise |
 
-### 🎭 Two modes, one skill
+### 🎯 Audience-aware by design
 
-- **Draft Mode** (default): quick personal message, multiple versions, audience-aware (non-technical boss vs. technical teammate)
-- **Package Mode** (on request): the full "we shipped something" bundle — Slack summary + diagram + doc updates + worklog refresh + optional git push. For when a one-liner doesn't cut it.
+Slacksmith asks *who the message is for* before it drafts:
+
+- **Boss / non-technical** — product behavior, user-visible outcomes, what to test. No IDs, no endpoint names, no internals.
+- **Technical teammate** — what changed in behavior, what flag / guard flipped, what risks remain, what to watch.
+
+Same update, two very different drafts.
 
 ---
 
@@ -77,7 +80,7 @@ use slacksmith to draft a short update for my tech colleague
 slacksmith — give me 3 versions
 slacksmith, use my recent Slack tone, keep it warm
 slacksmith, scope only the database workflow part
-slacksmith package mode — summary plus flowchart, update the docs, push the repo
+slacksmith with @Alex if possible
 ```
 
 Or just `/slacksmith` and tell it what you want.
@@ -87,14 +90,14 @@ Or just `/slacksmith` and tell it what you want.
 ## 🧭 Good fit if...
 
 - You write a lot of Slack updates and they all start feeling like changelogs
-- You want **one** skill that handles "quick ping to boss" *and* "proper release announcement"
 - You want boss-version and tech-version of the same message on demand
+- You want mentions actually resolved to real Slack user IDs (when the Slack plugin is installed)
 - You like your tools with personality
 
 ## 🚫 Not the right tool if...
 
 - You want a formal changelog generator → try a release-notes bot
-- You want AI to autonomously post to Slack without review → this always returns drafts
+- You want AI to autonomously post to Slack without review → slacksmith always returns drafts
 - You want it to invent information → it reads your session / codebase / Slack context and is deliberately conservative about "what we can prove"
 
 ---
@@ -103,10 +106,9 @@ Or just `/slacksmith` and tell it what you want.
 
 ```
 slacksmith/
-├── SKILL.md                       ← the brain (tone rules + two-mode workflow)
-├── agents/openai.yaml             ← Codex display metadata
-└── references/
-    └── document-scope.md          ← "which docs should I touch?" guide (package mode only)
+├── SKILL.md              ← the brain (tone rules + workflow)
+└── agents/
+    └── openai.yaml       ← Codex display metadata
 ```
 
 - **Harness-agnostic**: works in Claude Code, Codex CLI, and any tool that reads the standard `SKILL.md` frontmatter.
