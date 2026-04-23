@@ -419,6 +419,39 @@ Content comes from the session. Tone comes from your Slack history. Nothing is i
 
 ---
 
+## 🧪 Experimental — Tone Study Mode (branch: `feature/tone-study`)
+
+Currently testing a **personal voice distillation** feature inspired by [`titanwings/colleague-skill`](https://github.com/titanwings/colleague-skill) (9.7k ⭐).
+
+**What it does:** reads *your* recent Slack messages, distills the way you write into a persistent profile (`references/my-tone.md`), and every future draft auto-loads it so slacksmith sounds like *you*, not a generic "human-ish" default.
+
+**Captures six dimensions:**
+1. Voice Signature — one-sentence summary of how you sound
+2. Rhythm & Length — typical message length, paragraph habits
+3. Opening / Closing patterns — your real top-5 of each
+4. Vocabulary fingerprint — words you use, words you never use, swap-outs
+5. Punctuation & Formatting — em-dashes? lowercase? which emoji?
+6. Tone knobs — warmth, formality, confidence, humor (each 4-point scale)
+
+**Plus a deny list** — AI phrases that clearly aren't you (e.g. "I hope this message finds you well") become a hard filter for every draft.
+
+**How to try it** (on the branch, not main):
+
+```bash
+git clone -b feature/tone-study https://github.com/lauren-paang/slacksmith.git ~/code/slacksmith-tone-study
+ln -sfn ~/code/slacksmith-tone-study ~/.claude/skills/slacksmith
+```
+
+Then inside your session:
+
+> `slacksmith, build my tone profile`
+
+It'll ask for a time window and channel scope, read your sent messages, and generate `references/my-tone.md`. After that, every future slacksmith draft loads it automatically.
+
+**Not merged to main yet** — being tested. Feedback welcome via issue on this branch.
+
+---
+
 ## ♻️ Updating
 
 Already installed via `git clone`? Pull the latest:

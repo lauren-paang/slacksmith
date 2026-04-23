@@ -21,6 +21,15 @@ When the Slack plugin is installed:
 
 If the plugin is unavailable, say so briefly and continue from session/codebase context alone.
 
+## Load The User's Tone Profile (If It Exists)
+
+Before drafting, check for `references/my-tone.md` inside this skill's folder.
+
+- **If it exists:** read it and treat it as the primary tone reference. Its `Voice Signature`, `Vocabulary Fingerprint`, `Punctuation & Formatting`, `Tone Knobs`, and `Verbatim Samples` sections override generic tone rules. The `Things I Do That Most Drafts Get Wrong` list is a hard deny-list — never write those phrases.
+- **If it does not exist:** draft from the generic tone rules below. Don't ask the user to create one mid-request; just mention after the draft that they can run Tone Study Mode if they want future drafts calibrated to their voice.
+
+The profile is **a reference, not a cage** — still obey per-message instructions (audience, scope, length) from the user, but apply the voice on top.
+
 ## Tone Rules
 
 Write like the user is speaking as a person.
@@ -229,6 +238,112 @@ Quick update on [feature / fix]:
 
 ---
 
+---
+
+## Tone Study Mode — Building A Voice Profile
+
+This mode is used **occasionally**, not on every message. Its job is to distill the user's own writing voice from their real Slack history into a persistent profile (`references/my-tone.md`) that every future draft will load.
+
+### When To Enter Tone Study Mode
+
+The user asks for it explicitly:
+
+- `slacksmith, build my tone profile`
+- `slacksmith, study how I write in slack`
+- `slacksmith, learn my voice`
+- `slacksmith tone study mode`
+
+Do **not** enter this mode silently mid-draft. It's a separate, one-time (or occasional re-run) exercise.
+
+### Preconditions
+
+Tone Study Mode requires a Slack plugin/MCP with message-read capability. If no Slack plugin is available:
+
+- say so plainly
+- offer the alternative: the user pastes 10–20 real messages they've sent, and the skill distills the profile from those pasted samples instead
+
+### Workflow
+
+**Step 1 — Scope the study**
+
+Ask the user these in one short message:
+
+- **Time window** — `last 30 days` / `last 3 months` / `specific date range`
+- **Channels/DMs to include** — `all` / `only DMs` / `specific channels` / `skip #random and #memes`
+- **Minimum sample size** — default: at least 30 messages the user sent
+
+If the plugin can't reach enough messages, ask for paste-in samples to supplement.
+
+**Step 2 — Read only the user's sent messages**
+
+Use the Slack plugin to pull messages **authored by the user**. Ignore messages from others in the same threads unless they establish context for the user's reply.
+
+Stay inside the time window. Don't silently expand.
+
+**Step 3 — Distill into the six captured dimensions**
+
+Fill in each section of `references/my-tone-template.md` with concrete observed evidence:
+
+1. **Voice Signature** — one sentence summarizing how they sound
+2. **Rhythm & Length** — typical message length, paragraph behavior
+3. **Opening / Closing Patterns** — top 3–5 of each, actually observed
+4. **Vocabulary Fingerprint** — words they use, words they never use, swap-outs
+5. **Punctuation & Formatting** — em-dashes, lowercase starts, emoji frequency, which emoji
+6. **Tone Knobs** — warmth, formality, confidence, humor (each on a 4-point scale)
+
+For each claim, cite at least one real message fragment as evidence. Don't invent patterns not actually visible in the sample.
+
+**Step 4 — Capture the deny list**
+
+Identify 3–6 AI-drafting habits that clearly DON'T match this user. Examples:
+
+- "I hope this message finds you well"
+- over-parallel bullet structure
+- formal sign-offs like "Best regards"
+
+These go into `Things I Do That Most Drafts Get Wrong` and become a hard deny-list for all future drafts.
+
+**Step 5 — Extract verbatim samples**
+
+Pick 3–5 of the user's actual messages that are most representative, covering:
+
+- a short update
+- a follow-up ping
+- asking for input
+- disagreeing / pushing back
+- celebratory / gratitude
+
+Paste verbatim into the template.
+
+**Step 6 — Save to `references/my-tone.md`**
+
+Write the completed profile to `references/my-tone.md` (not the template file — leave `my-tone-template.md` as a blank template).
+
+Show the user a preview before saving. Confirm before overwriting an existing `my-tone.md`.
+
+**Step 7 — Offer a calibration test**
+
+After saving, offer: *"Want me to draft a sample message using this profile so you can tell me what feels off?"*
+
+If the user points out what's wrong, update the profile and re-save. This loop is how the profile gets sharper.
+
+### What Tone Study Mode Does NOT Do
+
+- does not read other people's messages to imitate them (that's outside this skill's scope)
+- does not upload messages anywhere — the profile stays local
+- does not run on every draft — only on explicit request
+- does not override per-message instructions like audience or length
+
+### Regeneration
+
+The profile can drift over time as voice evolves. Suggest re-running Tone Study Mode if:
+
+- the user says "this doesn't sound like me anymore"
+- it's been 6+ months since the last profile build
+- the user has joined a new team / changed role / switched communication style
+
+---
+
 ## How The User Should Call This Skill
 
 Plain requests work:
@@ -238,6 +353,8 @@ Plain requests work:
 - `slacksmith, use my recent Slack tone, keep it warm`
 - `slacksmith, scope only the database workflow part`
 - `slacksmith with @Name if possible`
+- `slacksmith, build my tone profile` *(enters Tone Study Mode)*
+- `slacksmith, study how I write` *(enters Tone Study Mode)*
 
 ## Final Reminder
 
